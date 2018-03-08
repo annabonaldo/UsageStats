@@ -6,7 +6,7 @@ namespace UsageStats
 {
     using PropertyTools.DataAnnotations;
 
-    public enum ReportInterval { Daily, Hourly }
+    public enum ReportInterval { Custom, Daily, Hourly }
 
     public class SettingsViewModel : Observable
     {

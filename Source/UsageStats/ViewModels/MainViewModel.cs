@@ -302,12 +302,12 @@ Windows Explorer";
             }
 
             SaveReport(Statistics, path);
-            foreach (var kvp in ApplicationUsage)
-            {
-                Statistics s = kvp.Value;
-                SaveReport(s, Path.Combine(path, kvp.Key));
-            }
-
+          //  foreach (var kvp in ApplicationUsage)
+          //  {
+          //      Statistics s = kvp.Value;
+          //      SaveReport(s, Path.Combine(path, kvp.Key));
+          //  }
+          //
             PostReports(path);
         }
 
@@ -627,8 +627,13 @@ Windows Explorer";
             RaisePropertyChanged("Report");
 
             bool saveReport;
+            TimeSpan span = DateTime.Now - RecordingStarted; 
             switch (Settings.ReportInterval)
             {
+                case ReportInterval.Custom:
+                    saveReport = (span.Minutes >= 1); 
+                    break; 
+
                 case ReportInterval.Daily:
                     // Check if we passed midnight
                     saveReport = RecordingStarted.Day != DateTime.Now.Day;
@@ -637,7 +642,7 @@ Windows Explorer";
                     saveReport = RecordingStarted.Hour != DateTime.Now.Hour;
                     break;
                 default:
-                    saveReport = false;
+                    saveReport = true;
                     break;
             }
 
@@ -686,6 +691,7 @@ Windows Explorer";
 
         public void OnClosed()
         {
+            SaveReports(); 
             Settings.Save();
         }
 
