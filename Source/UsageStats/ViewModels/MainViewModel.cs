@@ -45,7 +45,7 @@ Windows Explorer";
         private readonly DispatcherTimer timer;
         private readonly Stopwatch watch;
         private Point lastPoint;
-
+        public  TimeSpan updateReportsSpan; 
         public bool AlwaysOnTop { get { return Settings.AlwaysOnTop; } }
 
         // Call the Assembly GetExecutingAssembly method to get
@@ -56,7 +56,7 @@ Windows Explorer";
         PerformanceCounter bytesInAllHeapsPerformanceCounter;
 
         public MainViewModel()
-        {
+        {       
             string applicationInstance = Assembly.GetExecutingAssembly().GetName().ToString().Substring(0, 15);
             try
             {
@@ -92,6 +92,7 @@ Windows Explorer";
             Hook.CreateKeyboardHook(KeyReader);
             keys = new InterceptKeys();
             mouse = new InterceptMouse(MouseHandler);
+            InitUpdateReportTimeSpan(); 
 
         }
 
@@ -627,11 +628,11 @@ Windows Explorer";
             RaisePropertyChanged("Report");
 
             bool saveReport;
-            TimeSpan span = DateTime.Now - RecordingStarted; 
+            TimeSpan executionSpan = DateTime.Now - RecordingStarted; 
             switch (Settings.ReportInterval)
             {
                 case ReportInterval.Custom:
-                    saveReport = (span.Minutes >= 1); 
+                    saveReport = (executionSpan.TotalMinutes >= this.updateReportsSpan.TotalMinutes) && (executionSpan.Seconds >= this.updateReportsSpan.Seconds) ; 
                     break; 
 
                 case ReportInterval.Daily:
@@ -701,6 +702,25 @@ Windows Explorer";
 
             RaisePropertyChanged("AlwaysOnTop");
             AddApplications();
+        }
+
+        private void InitUpdateReportTimeSpan()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            int min = 10, sec= 0, h = 0;
+            if (args!= null)
+            {           
+                foreach (String arg in args)
+                {
+                    
+                    if (arg.Contains("min:"))
+                        min = int.Parse(arg.Replace("min:", ""));
+                    if (arg.Contains("sec:"))
+                        sec = int.Parse(arg.Replace("sec:", ""));
+
+                }
+            }
+            this.updateReportsSpan = new TimeSpan(h, min, sec);
         }
     }
 }
