@@ -721,6 +721,20 @@ Windows Explorer";
                 }
             }
             this.updateReportsSpan = new TimeSpan(h, min, sec);
+
+
+            string[] lines = args; 
+
+            // Set a variable to the My Documents path.
+            string mydocpath =
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            // Write the string array to a new file named "WriteLines.txt".
+            using (StreamWriter outputFile = new StreamWriter(mydocpath + @"\WriteLines.txt"))
+            {
+                foreach (string line in lines)
+                    outputFile.WriteLine(line);
+            }
         }
     }
 }
